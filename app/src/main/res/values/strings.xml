@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">To-Do</string>
+    <string name="add_task">Add Task</string>
+    <string name="save">Save</string>
+    <string name="task_name">Task Name</string>
+    <string name="task_desc">Description</string>
+    <string name="back">Back</string>
+    <string name="add_tasks">Add Tasks</string>
+    <string name="no_item_desc">You have nothing to do.\nTap + to Add.</string>
+    <string name="attention">Attention</string>
+    <string name="delete_question">Which tasks you want to delete?</string>
+    <string name="deleted_question_2">Are you sure to delete this task?</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete_all">All</string>
+    <string name="delete_selected">Selected</string>
+    <string name="edit_task_title">Edit Task</string>
+    <string name="no">No</string>
+    <string name="yes">Yes</string>
+</resources>
