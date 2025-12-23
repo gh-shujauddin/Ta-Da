@@ -21,15 +21,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qadri.to_do.R
 import com.qadri.to_do.ui.ToDoAppTopBar
-import com.qadri.to_do.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
-object TaskEditDestination : NavigationDestination {
-    override val route = "item_edit"
-    override val titleRes = R.string.edit_task_title
-    const val taskIdArg = "taskId"
-    val routeWithArgs = "$route/{$taskIdArg}"
-}
+@Serializable
+data class TaskEditDestination(
+    val taskId: Int
+)
 
 @Composable
 fun TaskEditScreen(
@@ -44,7 +42,7 @@ fun TaskEditScreen(
     Scaffold(
         topBar = {
             ToDoAppTopBar(
-                title = stringResource(id = TaskEditDestination.titleRes),
+                title = stringResource(R.string.app_name),
                 canNavigateBack = true,
                 editScreen = true,
                 navigateUp = onNavigateUp,

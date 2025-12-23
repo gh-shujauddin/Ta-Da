@@ -10,6 +10,7 @@ import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import androidx.navigation.toRoute
 import com.qadri.to_do.TaskApplication
 import com.qadri.to_do.data.TaskRepository
 import com.qadri.to_do.model.Task
@@ -25,7 +26,7 @@ class TaskEditViewModel(
     var taskUiState by mutableStateOf(TaskUiState())
         private set
 
-    private val taskId: Int = checkNotNull(savedStateHandle[TaskEditDestination.taskIdArg])
+    private val taskId: Int = checkNotNull(savedStateHandle.toRoute<TaskEditDestination>().taskId)
 
     init {
         viewModelScope.launch {

@@ -15,7 +15,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
@@ -27,15 +26,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qadri.to_do.R
-import com.qadri.to_do.model.Task
 import com.qadri.to_do.ui.ToDoAppTopBar
-import com.qadri.to_do.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
-object TaskInputDestination : NavigationDestination {
-    override val route: String = "task_input"
-    override val titleRes: Int = R.string.add_task
-}
+@Serializable
+object TaskInputDestination
 
 @Composable
 fun TaskInputScreen(
@@ -48,7 +44,7 @@ fun TaskInputScreen(
     Scaffold(
         topBar = {
             ToDoAppTopBar(
-                title = stringResource(TaskInputDestination.titleRes),
+                title = stringResource(R.string.app_name),
                 canNavigateBack = canNavigateBack,
                 navigateUp = onNavigateUp,
                 editScreen = false

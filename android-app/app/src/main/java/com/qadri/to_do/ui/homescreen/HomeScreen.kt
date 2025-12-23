@@ -62,16 +62,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qadri.to_do.R
 import com.qadri.to_do.model.Task
 import com.qadri.to_do.ui.ToDoAppTopBar
-import com.qadri.to_do.ui.navigation.NavigationDestination
 import com.qadri.to_do.ui.utils.ExpandAndShrinkAnimation
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.serialization.Serializable
 
 
-object HomeDestination : NavigationDestination {
-    override val route: String = "home"
-    override val titleRes: Int = R.string.app_name
-}
+@Serializable
+object HomeDestination
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,7 +86,7 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             ToDoAppTopBar(
-                title = stringResource(HomeDestination.titleRes),
+                title = stringResource(R.string.app_name),
                 canNavigateBack = false,
                 editScreen = true,
                 scrollBehavior = scrollBehavior,

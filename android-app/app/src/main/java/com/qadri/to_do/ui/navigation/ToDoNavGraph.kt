@@ -7,6 +7,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
+import androidx.navigation.toRoute
 import com.qadri.to_do.ui.homescreen.HomeDestination
 import com.qadri.to_do.ui.homescreen.HomeScreen
 import com.qadri.to_do.ui.homescreen.TaskEditDestination
@@ -21,32 +22,29 @@ fun ToDoNavGraph(
 ) {
     NavHost(
         navController = navController,
-        startDestination = HomeDestination.route,
+        startDestination = HomeDestination,
         modifier = modifier
     ) {
-        composable(route = HomeDestination.route) {
+        composable<HomeDestination> {
             HomeScreen(
-                navigateToAddItem = { navController.navigate(TaskInputDestination.route) },
+                navigateToAddItem = { navController.navigate(TaskInputDestination) },
                 navigateToUpdateItem = {
-                    navController.navigate("${TaskEditDestination.route}/${it}")
+                    navController.navigate(TaskEditDestination(it))
                 }
             )
         }
-        composable(route = TaskInputDestination.route) {
+        composable<TaskInputDestination> {
             TaskInputScreen(
                 navigateBack = { navController.navigateUp() },
                 onNavigateUp = { navController.navigateUp() }
             )
         }
-        composable(
-            route = TaskEditDestination.routeWithArgs,
-            arguments = listOf(navArgument(TaskEditDestination.taskIdArg) {
-                type = NavType.IntType
-            })
-        ) {
+        composable<TaskEditDestination> { backStackEntry ->
+            val args = backStackEntry.toRoute<TaskEditDestination>()
             TaskEditScreen(
                 onNavigateUp = { navController.popBackStack() },
-                navigateBack = { navController.navigateUp() })
+                navigateBack = { navController.navigateUp() }
+            )
         }
     }
 }
