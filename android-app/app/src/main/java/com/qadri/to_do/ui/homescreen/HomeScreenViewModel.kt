@@ -1,5 +1,6 @@
 package com.qadri.to_do.ui.homescreen
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,6 +36,8 @@ class HomeScreenViewModel(
     suspend fun saveTask() {
         if (validateInput()) {
             taskRepository.insertTask(taskUiState.taskdetails.toTask())
+        } else {
+            Log.d(TAG, "Input not validatd")
         }
     }
 
@@ -70,6 +73,8 @@ class HomeScreenViewModel(
                 )
             }
         }
+
+        private val TAG = HomeScreenViewModel::class.simpleName
     }
 }
 

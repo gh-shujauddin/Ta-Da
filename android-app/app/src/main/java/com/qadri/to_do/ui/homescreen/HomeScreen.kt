@@ -28,18 +28,17 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
-import androidx.compose.material3.DismissDirection
-import androidx.compose.material3.DismissValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SwipeToDismiss
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberDismissState
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -196,7 +195,7 @@ fun TaskList(
             .padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small))
     ) {
-        items(incompletedTasks, key = {it.id}) { task ->
+        items(incompletedTasks, key = { it.id }) { task ->
             TaskItem(
                 task = task,
                 onCheckedChange = {
@@ -214,7 +213,7 @@ fun TaskList(
             )
         }
 
-        items(completedTasks, key = {it.id}) { task ->
+        items(completedTasks, key = { it.id }) { task ->
             TaskItem(
                 task = task,
                 onCheckedChange = {
@@ -243,11 +242,11 @@ fun TaskItem(
 //    isCompleted: Boolean,
     onDelete: () -> Unit
 ) {
+    val coroutineScope = rememberCoroutineScope()
     // Add our dismiss state for the animation
-    val dismissState = rememberDismissState()
+    val dismissState = rememberSwipeToDismissBoxState()
     // Swipe from left to right to dismiss
-    val isDismissed =
-        dismissState.isDismissed(DismissDirection.StartToEnd)
+    val isDismissed = dismissState.progress == 1f
 
     val itemAppeared = remember { mutableStateOf(false) }
 
@@ -256,31 +255,31 @@ fun TaskItem(
     ) {
         itemAppeared.value = true
     }
-    LaunchedEffect(
-        key1 = dismissState.isDismissed(DismissDirection.StartToEnd)
-    ) {
-        if (isDismissed) {
-            itemAppeared.value = false
-            delay(ANIMATION_DURATION.toLong())
-            onDelete()
-        }
-    }
 
     itemAppeared.ExpandAndShrinkAnimation {
-        SwipeToDismiss(
+        SwipeToDismissBox(
             state = dismissState,
             modifier = Modifier,
-            directions = setOf(DismissDirection.StartToEnd),
-            background = {
+            enableDismissFromEndToStart = false,
+            onDismiss = {
+                if (dismissState.dismissDirection == SwipeToDismissBoxValue.StartToEnd) {
+                    coroutineScope.launch {
+                        itemAppeared.value = false
+                        delay(ANIMATION_DURATION.toLong())
+                        onDelete()
+                    }
+                }
+            },
+            backgroundContent = {
                 val color by animateColorAsState(
                     when (dismissState.targetValue) {
-                        DismissValue.Default -> Color.White
+                        SwipeToDismissBoxValue.Settled -> Color.White
                         else -> MaterialTheme.colorScheme.error
                     },
                     label = ""
                 )
                 val scale by animateFloatAsState(
-                    if (dismissState.targetValue == DismissValue.Default) 0.75f else 1f,
+                    if (dismissState.targetValue == SwipeToDismissBoxValue.Settled) 0.75f else 1f,
                     label = ""
                 )
 
@@ -296,22 +295,20 @@ fun TaskItem(
                         modifier = Modifier.scale(scale)
                     )
                 }
-            },
-            dismissContent = {
-                Column(
-                    modifier = Modifier.background(
-                        MaterialTheme.colorScheme.background
-                    )
-                ) {
-                    TaskCard(
-                        task = task,
-                        onCheckedChange = { onCheckedChange() },
-                        modifier = modifier,
-//                        isCompleted = isCompleted
-                    )
-                }
             }
-        )
+        ) {
+            Column(
+                modifier = Modifier.background(
+                    MaterialTheme.colorScheme.background
+                )
+            ) {
+                TaskCard(
+                    task = task,
+                    onCheckedChange = { onCheckedChange() },
+                    modifier = modifier
+                )
+            }
+        }
     }
 }
 
@@ -379,7 +376,8 @@ fun DeleteConfirmationDialog(
     onDeleteCancel: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    AlertDialog(onDismissRequest = { /* Do nothing */ },
+    AlertDialog(
+        onDismissRequest = { /* Do nothing */ },
         title = { Text(stringResource(R.string.attention)) },
         text = { Text(stringResource(R.string.delete_question)) },
         modifier = modifier,
@@ -390,7 +388,10 @@ fun DeleteConfirmationDialog(
         },
         confirmButton = {
             TextButton(onClick = onDeleteCompleted) {
-                Text(text = stringResource(id = R.string.delete_selected), color = MaterialTheme.colorScheme.scrim)
+                Text(
+                    text = stringResource(id = R.string.delete_selected),
+                    color = MaterialTheme.colorScheme.scrim
+                )
             }
             TextButton(onClick = onDeleteConfirm) {
                 Text(stringResource(R.string.delete_all), color = MaterialTheme.colorScheme.scrim)

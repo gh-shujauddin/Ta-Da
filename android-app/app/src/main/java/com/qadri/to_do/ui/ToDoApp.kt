@@ -1,11 +1,7 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.qadri.to_do.ui
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -16,7 +12,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
@@ -29,6 +24,7 @@ fun ToDoApp(navController: NavHostController = rememberNavController()) {
     ToDoNavGraph(navController = navController)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToDoAppTopBar(
     title: String,
