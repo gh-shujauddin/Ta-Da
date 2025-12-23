@@ -23,27 +23,6 @@ class HomeScreenViewModel @Inject constructor(
     private val taskRepository: TaskRepository
 ) : ViewModel() {
 
-    var taskUiState by mutableStateOf(TaskUiState())
-        private set
-
-    fun updateUiState(task: TaskDetails) {
-        taskUiState = TaskUiState(taskdetails = task, isEntryValid = validateInput(task))
-    }
-
-    private fun validateInput(taskDetails: TaskDetails = taskUiState.taskdetails): Boolean {
-        return with(taskDetails) {
-            taskName.isNotBlank()
-        }
-    }
-
-    suspend fun saveTask() {
-        if (validateInput()) {
-            taskRepository.insertTask(taskUiState.taskdetails.toTask())
-        } else {
-            Log.d(TAG, "Input not validatd")
-        }
-    }
-
     val getAllTasks = taskRepository.getAllTask()
         .stateIn(
             viewModelScope,
@@ -72,11 +51,6 @@ class HomeScreenViewModel @Inject constructor(
     }
 }
 
-data class TaskUiState(
-    val taskdetails: TaskDetails = TaskDetails(),
-    val isEntryValid: Boolean = false
-)
-
 data class TaskDetails(
     val id: Long = 0,
     val taskName: String = "",
@@ -84,9 +58,3 @@ data class TaskDetails(
     val isCompleted: Boolean = false
 )
 
-fun TaskDetails.toTask(): Task = Task(
-    id = id,
-    taskName = taskName,
-    taskDescription = taskDescription,
-    isCompleted = isCompleted
-)

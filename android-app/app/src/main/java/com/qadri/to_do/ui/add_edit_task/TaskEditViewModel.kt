@@ -1,5 +1,6 @@
-package com.qadri.to_do.ui.homescreen
+package com.qadri.to_do.ui.add_edit_task
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,7 +9,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.qadri.to_do.data.TaskRepository
-import com.qadri.to_do.model.Task
+import com.qadri.to_do.model.TaskUiState
+import com.qadri.to_do.model.mappers.toTask
+import com.qadri.to_do.model.mappers.toTaskUiState
+import com.qadri.to_do.ui.homescreen.TaskDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -24,14 +28,16 @@ class TaskEditViewModel @Inject constructor(
     var taskUiState by mutableStateOf(TaskUiState())
         private set
 
-    private val taskId: Long = checkNotNull(savedStateHandle.toRoute<TaskEditDestination>().taskId)
+    private val taskId: Long? = savedStateHandle.toRoute<TaskEditDestination>().taskId
 
     init {
-        viewModelScope.launch {
-            taskUiState = taskRepository.getTask(taskId)
-                .filterNotNull()
-                .first()
-                .toTaskUiState(true)
+        taskId?.let {
+            viewModelScope.launch {
+                taskUiState = taskRepository.getTask(taskId)
+                    .filterNotNull()
+                    .first()
+                    .toTaskUiState(true)
+            }
         }
     }
 
@@ -52,16 +58,16 @@ class TaskEditViewModel @Inject constructor(
             taskName.isNotBlank()
         }
     }
+
+    suspend fun saveTask() {
+        if (validateInput()) {
+            taskRepository.insertTask(taskUiState.taskdetails.toTask())
+        } else {
+            Log.d(TAG, "Input not validated")
+        }
+    }
+
+    companion object {
+        private val TAG = TaskEditViewModel::class.simpleName
+    }
 }
-
-fun Task.toTaskUiState(isEntryValid: Boolean = false): TaskUiState = TaskUiState(
-    taskdetails = this.toTaskDetails(),
-    isEntryValid = isEntryValid
-)
-
-fun Task.toTaskDetails(): TaskDetails = TaskDetails(
-    id = id,
-    taskName = taskName,
-    taskDescription = taskDescription,
-    isCompleted = isCompleted
-)

@@ -2,16 +2,18 @@ package com.qadri.to_do.ui.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import com.qadri.to_do.ui.homescreen.HomeDestination
 import com.qadri.to_do.ui.homescreen.HomeScreen
-import com.qadri.to_do.ui.homescreen.TaskEditDestination
-import com.qadri.to_do.ui.homescreen.TaskEditScreen
-import com.qadri.to_do.ui.homescreen.TaskInputDestination
-import com.qadri.to_do.ui.homescreen.TaskInputScreen
+import com.qadri.to_do.ui.add_edit_task.TaskEditDestination
+import com.qadri.to_do.ui.add_edit_task.TaskEditScreen
+import com.qadri.to_do.ui.add_edit_task.TaskInputDestination
+import com.qadri.to_do.ui.add_edit_task.TaskInputScreen
+import com.qadri.to_do.ui.add_edit_task.TaskEditViewModel
 
 @Composable
 fun ToDoNavGraph(

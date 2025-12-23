@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.qadri.to_do.ui.homescreen
+package com.qadri.to_do.ui.add_edit_task
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,9 +25,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qadri.to_do.R
+import com.qadri.to_do.model.TaskUiState
 import com.qadri.to_do.ui.ToDoAppTopBar
+import com.qadri.to_do.ui.homescreen.TaskDetails
+import com.qadri.to_do.ui.add_edit_task.TaskEditViewModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
@@ -39,7 +41,7 @@ fun TaskInputScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
     canNavigateBack: Boolean = true,
-    viewModel: HomeScreenViewModel = hiltViewModel()
+    viewModel: TaskEditViewModel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
     Scaffold(

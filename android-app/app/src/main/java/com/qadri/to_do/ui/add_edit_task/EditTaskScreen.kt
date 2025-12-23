@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalMaterial3Api::class)
 
-package com.qadri.to_do.ui.homescreen
+package com.qadri.to_do.ui.add_edit_task
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
@@ -19,15 +19,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qadri.to_do.R
 import com.qadri.to_do.ui.ToDoAppTopBar
+import com.qadri.to_do.ui.add_edit_task.TaskEditViewModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class TaskEditDestination(
-    val taskId: Long
+    val taskId: Long? = null
 )
 
 @Composable
