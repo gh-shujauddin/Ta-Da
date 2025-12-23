@@ -12,11 +12,14 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.qadri.to_do.TaskApplication
 import com.qadri.to_do.data.TaskRepository
 import com.qadri.to_do.model.Task
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeScreenViewModel(
+@HiltViewModel
+class HomeScreenViewModel @Inject constructor(
     private val taskRepository: TaskRepository
 ) : ViewModel() {
 
@@ -65,15 +68,6 @@ class HomeScreenViewModel(
     }
 
     companion object {
-        val factory: ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                val application = (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as TaskApplication)
-                HomeScreenViewModel(
-                    application.container.taskRepository
-                )
-            }
-        }
-
         private val TAG = HomeScreenViewModel::class.simpleName
     }
 }
@@ -84,7 +78,7 @@ data class TaskUiState(
 )
 
 data class TaskDetails(
-    val id: Int = 0,
+    val id: Long = 0,
     val taskName: String = "",
     val taskDescription: String = "",
     val isCompleted: Boolean = false

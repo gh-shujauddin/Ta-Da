@@ -7,7 +7,7 @@ import androidx.room.PrimaryKey
 @Entity(tableName = "task")
 data class Task(
     @PrimaryKey(autoGenerate = true)
-    val id: Int,
+    val id: Long,
     @ColumnInfo(name = "task_name")
     val taskName: String,
     @ColumnInfo(name = "task_description")

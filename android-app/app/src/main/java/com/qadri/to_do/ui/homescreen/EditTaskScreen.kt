@@ -18,6 +18,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qadri.to_do.R
 import com.qadri.to_do.ui.ToDoAppTopBar
@@ -26,7 +27,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class TaskEditDestination(
-    val taskId: Int
+    val taskId: Long
 )
 
 @Composable
@@ -34,7 +35,7 @@ fun TaskEditScreen(
     onNavigateUp: () -> Unit,
     navigateBack: () -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: TaskEditViewModel = viewModel(factory = TaskEditViewModel.factory)
+    viewModel: TaskEditViewModel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
     var deleteConfirmationRequired by rememberSaveable { mutableStateOf(false) }

@@ -58,7 +58,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.FrameMetricsAggregator.ANIMATION_DURATION
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.qadri.to_do.R
 import com.qadri.to_do.model.Task
 import com.qadri.to_do.ui.ToDoAppTopBar
@@ -75,9 +75,9 @@ object HomeDestination
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    viewModel: HomeScreenViewModel = viewModel(factory = HomeScreenViewModel.factory),
+    viewModel: HomeScreenViewModel = hiltViewModel(),
     navigateToAddItem: () -> Unit,
-    navigateToUpdateItem: (Int) -> Unit
+    navigateToUpdateItem: (Long) -> Unit
 ) {
     val allTaskList = viewModel.getAllTasks.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -150,7 +150,7 @@ fun HomeScreen(
 @Composable
 fun HomeBody(
     allTask: List<Task>,
-    onTaskClick: (Int) -> Unit,
+    onTaskClick: (Long) -> Unit,
     onCheckedChange: (Task) -> Unit,
     modifier: Modifier = Modifier,
     onDelete: (Task) -> Unit

@@ -24,6 +24,7 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.qadri.to_do.R
 import com.qadri.to_do.ui.ToDoAppTopBar
@@ -38,7 +39,7 @@ fun TaskInputScreen(
     navigateBack: () -> Unit,
     onNavigateUp: () -> Unit,
     canNavigateBack: Boolean = true,
-    viewModel: HomeScreenViewModel = viewModel(factory = HomeScreenViewModel.factory)
+    viewModel: HomeScreenViewModel = hiltViewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
