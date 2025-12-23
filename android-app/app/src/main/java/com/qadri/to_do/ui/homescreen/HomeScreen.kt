@@ -1,5 +1,3 @@
-@file:OptIn(ExperimentalMaterial3Api::class)
-
 package com.qadri.to_do.ui.homescreen
 
 import androidx.compose.animation.animateColorAsState
@@ -75,6 +73,7 @@ object HomeDestination : NavigationDestination {
     override val titleRes: Int = R.string.app_name
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
@@ -274,7 +273,7 @@ fun TaskItem(
                 val color by animateColorAsState(
                     when (dismissState.targetValue) {
                         SwipeToDismissBoxValue.Settled -> Color.White
-                        else -> MaterialTheme.colorScheme.error
+                        else -> MaterialTheme.colorScheme.errorContainer
                     },
                     label = ""
                 )
@@ -286,13 +285,14 @@ fun TaskItem(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(color),
+                        .background(color = color, shape = MaterialTheme.shapes.medium),
                     contentAlignment = CenterStart
                 ) {
                     Icon(
                         Icons.Default.Delete,
                         contentDescription = "Delete Icon",
-                        modifier = Modifier.scale(scale)
+                        modifier = Modifier.scale(scale),
+                        tint = MaterialTheme.colorScheme.onErrorContainer
                     )
                 }
             }
@@ -320,7 +320,8 @@ fun TaskCard(
     Card(
         modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(16.dp),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiary)
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.tertiary),
+        shape = MaterialTheme.shapes.medium
     ) {
         Row(modifier = Modifier.height(IntrinsicSize.Max)) {
             Column(
