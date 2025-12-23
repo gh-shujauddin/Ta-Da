@@ -27,17 +27,21 @@ fun ToDoApp(navController: NavHostController = rememberNavController()) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ToDoAppTopBar(
+    modifier: Modifier = Modifier,
     title: String,
     canNavigateBack: Boolean,
     editScreen: Boolean,
     navigateUp: () -> Unit = {},
     deleteAll: () -> Unit = {},
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-    modifier: Modifier = Modifier
+    scrollBehavior: TopAppBarScrollBehavior? = null
 ) {
     TopAppBar(
         title = {
-            Text(title, color = MaterialTheme.colorScheme.onPrimary)
+            Text(
+                title,
+                color = MaterialTheme.colorScheme.onPrimary,
+                style = MaterialTheme.typography.titleLarge
+            )
         },
         modifier = modifier,
         navigationIcon = {
