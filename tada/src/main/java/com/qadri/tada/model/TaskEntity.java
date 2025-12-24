@@ -8,7 +8,6 @@ import lombok.Setter;
 @Getter
 @Setter
 public class TaskEntity {
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     private Long id;
 

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TaskResponseDto {
+public class TaskDto {
     private Long id;
     private String taskName;
     private String taskDescription;
