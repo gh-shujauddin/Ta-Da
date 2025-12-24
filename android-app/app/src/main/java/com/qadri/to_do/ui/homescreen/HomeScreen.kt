@@ -246,8 +246,6 @@ fun TaskItem(
     val coroutineScope = rememberCoroutineScope()
     // Add our dismiss state for the animation
     val dismissState = rememberSwipeToDismissBoxState()
-    // Swipe from left to right to dismiss
-    val isDismissed = dismissState.progress == 1f
 
     val itemAppeared = remember { mutableStateOf(false) }
 
