@@ -83,6 +83,9 @@ dependencies {
     // work manger
     implementation("androidx.work:work-runtime:2.11.0")
 
+    // Preferences DataStore
+    implementation("androidx.datastore:datastore-preferences:1.2.0")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
