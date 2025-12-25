@@ -7,5 +7,9 @@ fun Task.toTaskEntity(): TaskEntity = TaskEntity(
     id = id,
     taskName = taskName,
     taskDescription = taskDescription,
-    isCompleted = isCompleted
+    isCompleted = isCompleted,
+    isSynced = false,
+    isDeleted = false,
+    lastUpdateTime = 0,
+    createdAt = 0
 )

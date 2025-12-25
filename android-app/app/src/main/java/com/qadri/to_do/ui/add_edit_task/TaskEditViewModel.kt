@@ -32,10 +32,7 @@ class TaskEditViewModel @Inject constructor(
     init {
         taskId?.let {
             viewModelScope.launch {
-                taskUiState = taskRepository.getTask(taskId)
-                    .filterNotNull()
-                    .first()
-                    .toTaskUiState(true)
+                taskUiState = (taskRepository.getTask(taskId) ?: Task()).toTaskUiState(true)
             }
         }
     }
@@ -62,7 +59,7 @@ class TaskEditViewModel @Inject constructor(
 
     suspend fun saveTask() {
         if (validateInput()) {
-            taskRepository.insertTask(taskUiState.task)
+            taskRepository.insertLocalTask(taskUiState.task)
         } else {
             Log.d(TAG, "Input not validated")
         }

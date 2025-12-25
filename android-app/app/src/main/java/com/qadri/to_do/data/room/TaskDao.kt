@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import kotlinx.coroutines.flow.Flow
 
@@ -15,7 +16,7 @@ interface TaskDao {
     fun getAllTask(): Flow<List<TaskEntity>>
 
     @Query("select * from task where id = :id")
-    fun getTask(id: Long): Flow<TaskEntity>
+    suspend fun getTask(id: Long): TaskEntity?
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertTask(task: TaskEntity)
@@ -38,9 +39,20 @@ interface TaskDao {
     @Query("select * from task where isSynced = 0")
     suspend fun getAllUnSyncedTasks(): List<TaskEntity>
 
-    @Query("update task set isSynced = 1 where id = :id")
-    suspend fun markTaskAsSynced(id: Long)
+    @Query("update task set isSynced = :synced where id IN (:id)")
+    suspend fun markTaskAsSynced(id: List<Long>, synced: Boolean)
 
     @Query("select * from task where isDeleted = 1")
     suspend fun getAllDeletedTasks(): List<TaskEntity>
+
+    @Update
+    suspend fun updateMultipleTasks(tasks: List<TaskEntity>)
+
+    @Transaction
+    suspend fun updateAndMarkAsSynced(tasks: List<TaskEntity>) {
+        updateMultipleTasks(tasks)
+
+        val ids = tasks.map { it.id }
+        markTaskAsSynced(ids, true)
+    }
 }

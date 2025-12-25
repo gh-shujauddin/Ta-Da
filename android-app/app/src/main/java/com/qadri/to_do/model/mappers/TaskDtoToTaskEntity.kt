@@ -11,3 +11,12 @@ fun TaskEntity.toTaskDto() = TaskDto(
     lastUpdateTime = lastUpdateTime,
     createdAt = createdAt
 )
+
+fun TaskDto.toTaskEntity() = TaskEntity(
+    id = id,
+    taskName = taskName,
+    taskDescription = taskDescription,
+    isCompleted = isCompleted,
+    lastUpdateTime = lastUpdateTime,
+    createdAt = createdAt
+)

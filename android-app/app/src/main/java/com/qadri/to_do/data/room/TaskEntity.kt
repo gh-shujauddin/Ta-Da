@@ -17,6 +17,6 @@ data class TaskEntity(
     val isCompleted: Boolean,
     val isSynced: Boolean = false,
     val isDeleted: Boolean = false,
-    val lastUpdateTime: LocalDateTime,
-    val createdAt: LocalDateTime
+    val lastUpdateTime: Long,
+    val createdAt: Long
 )

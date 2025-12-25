@@ -7,10 +7,14 @@ import com.qadri.to_do.model.dto.TaskDto
 class RemoteTaskRepositoryImpl(
     private val apiService: TaskApiService
 ) : RemoteTaskRepository {
-    override suspend fun getAllTasks(): Result<List<TaskDto>> {
+    override suspend fun getAllTasks(lastSyncTime: Long?): Result<List<TaskDto>> {
         return try {
-            val tasks = apiService.getAllTasks()
-            Result.success(tasks)
+            val response = apiService.getAllTasks(lastSyncTime)
+            if (response.isSuccessful) {
+                Result.success(response.body() ?: emptyList())
+            } else {
+                Result.failure(Exception("Server error: ${response.code()} ${response.errorBody()}"))
+            }
         } catch (ex: Exception) {
             Result.failure(ex)
         }
@@ -18,8 +22,12 @@ class RemoteTaskRepositoryImpl(
 
     override suspend fun updateTask(task: TaskDto): Result<TaskDto> {
         return try {
-            val task = apiService.updateTask(task.id, task)
-            Result.success(task)
+            val response = apiService.updateTask(task.id, task)
+            if (response.isSuccessful && response.body() != null) {
+                Result.success(response.body()!!)
+            } else {
+                Result.failure(Exception("Server error: ${response.code()} ${response.errorBody()}"))
+            }
         } catch (ex: Exception) {
             Result.failure(ex)
         }
@@ -27,8 +35,12 @@ class RemoteTaskRepositoryImpl(
 
     override suspend fun deleteTask(task: TaskDto): Result<Unit> {
         return try {
-            val task = apiService.d(task.id, task)
-            Result.success(task)
+            val response = apiService.deleteTaskById(task.id)
+            if (response.isSuccessful) {
+                Result.success(Unit)
+            } else {
+                Result.failure(Exception("Server error: ${response.code()} ${response.errorBody()}"))
+            }
         } catch (ex: Exception) {
             Result.failure(ex)
         }

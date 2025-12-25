@@ -1,56 +1,29 @@
 package com.qadri.to_do.workers
 
 import android.content.Context
-import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
-import androidx.work.Worker
 import androidx.work.WorkerParameters
-import com.qadri.to_do.data.repository.RemoteTaskRepository
-import com.qadri.to_do.data.repository.TaskRepository
-import com.qadri.to_do.model.mappers.toTaskDto
+import com.qadri.to_do.data.usecase.BackgroundSyncUseCase
 import dagger.assisted.Assisted
-import javax.inject.Inject
+import dagger.assisted.AssistedInject
 
 @HiltWorker
-class BackgroundSyncWorker @Inject constructor(
+class BackgroundSyncWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val taskRepository: TaskRepository,
-    private val onlineRepository: RemoteTaskRepository
+    private val bgSyncUseCase: BackgroundSyncUseCase
 ) : CoroutineWorker(context, workerParameters) {
 
 
     override suspend fun doWork(): Result {
-        // 1. Get all unsynced tasks from room and create or update on cloud and mark sync to true locally
-        val unSyncedTasks = taskRepository.getAllUnSyncedTasks()
+        val result = bgSyncUseCase()
 
-        unSyncedTasks.forEach { taskEntity ->
-            onlineRepository.updateTask(taskEntity.toTaskDto())
-                .onSuccess {
-                    taskRepository.markTaskAsSynced(taskEntity.id)
-                }
-                .onFailure {
-                    Log.d(TAG, it.message.toString())
-                }
+        return if (result.isSuccess) {
+            Result.success()
+        } else {
+            Result.failure()
         }
-
-        // 2. Get all deleted tasks from room, delete that task from cloud, if delete success, then remove from room too
-        val deletedTasks = taskRepository.getAllDeletedTasks()
-
-        deletedTasks.forEach { taskEntity ->
-            onlineRepository.deleteTask(taskEntity.toTaskDto())
-                .onSuccess {
-                    taskRepository.deleteTaskPermanently(taskEntity)
-                }
-                .onFailure {
-                    Log.d(TAG, it.message.toString())
-                }
-        }
-
-        // Get all tasks from cloud based on last synced time (set last synced time in prefs after every sync completed)
-
-        return Result.success()
     }
 
     companion object {

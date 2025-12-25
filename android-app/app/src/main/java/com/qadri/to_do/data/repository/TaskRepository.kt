@@ -2,14 +2,16 @@ package com.qadri.to_do.data.repository
 
 import com.qadri.to_do.data.room.TaskEntity
 import com.qadri.to_do.model.Task
+import com.qadri.to_do.model.dto.TaskDto
 import kotlinx.coroutines.flow.Flow
 
 interface TaskRepository {
     fun getAllTask(): Flow<List<Task>>
 
-    fun getTask(id: Long): Flow<Task>
+    suspend fun getTask(id: Long): Task?
 
-    suspend fun insertTask(task: Task)
+    suspend fun insertTask(task: TaskDto, synced: Boolean = false)
+    suspend fun insertLocalTask(task: Task)
 
     suspend fun updateItem(task: Task)
 
@@ -21,8 +23,9 @@ interface TaskRepository {
 
     suspend fun deleteCompletedTasks()
 
-    suspend fun markTaskAsSynced(id: Long)
+    suspend fun markTaskAsSynced(id: Long, synced: Boolean)
 
     suspend fun getAllUnSyncedTasks(): List<TaskEntity>
     suspend fun getAllDeletedTasks(): List<TaskEntity>
+    suspend fun updateAndMarkAsSynced(tasks: List<TaskDto>) {}
 }
