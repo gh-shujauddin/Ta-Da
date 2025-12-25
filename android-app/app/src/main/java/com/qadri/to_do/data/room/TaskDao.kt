@@ -23,8 +23,11 @@ interface TaskDao {
     @Update
     suspend fun updateItem(task: TaskEntity)
 
+    @Query("update task set isDeleted = 1 where id=:id")
+    suspend fun deleteTask(id: Long)
+
     @Delete
-    suspend fun deleteTask(task: TaskEntity)
+    suspend fun deleteTaskPermanently(task: TaskEntity)
 
     @Query("delete from task")
     suspend fun deleteAllTasks()
@@ -33,5 +36,11 @@ interface TaskDao {
     suspend fun deleteCompletedTasks()
 
     @Query("select * from task where isSynced = 0")
-    fun getAllUnSyncedTasks(): Flow<List<TaskEntity>>
+    suspend fun getAllUnSyncedTasks(): List<TaskEntity>
+
+    @Query("update task set isSynced = 1 where id = :id")
+    suspend fun markTaskAsSynced(id: Long)
+
+    @Query("select * from task where isDeleted = 1")
+    suspend fun getAllDeletedTasks(): List<TaskEntity>
 }

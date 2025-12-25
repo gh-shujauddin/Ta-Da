@@ -3,6 +3,7 @@ package com.qadri.to_do.data.room
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import java.time.LocalDateTime
 
 @Entity(tableName = "task")
 data class TaskEntity(
@@ -15,5 +16,7 @@ data class TaskEntity(
     @ColumnInfo(name = "is_completed")
     val isCompleted: Boolean,
     val isSynced: Boolean = false,
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    val lastUpdateTime: LocalDateTime,
+    val createdAt: LocalDateTime
 )

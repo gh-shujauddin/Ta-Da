@@ -2,6 +2,7 @@ package com.qadri.to_do.data
 
 import com.qadri.to_do.data.repository.TaskRepository
 import com.qadri.to_do.data.room.TaskDao
+import com.qadri.to_do.data.room.TaskEntity
 import com.qadri.to_do.model.Task
 import com.qadri.to_do.model.mappers.toTask
 import com.qadri.to_do.model.mappers.toTaskEntity
@@ -23,18 +24,21 @@ class OfflineTaskRepository(private val taskDao: TaskDao) : TaskRepository {
 
     override suspend fun updateItem(task: Task) = taskDao.updateItem(task.toTaskEntity())
 
-    override suspend fun deleteTask(task: Task) = taskDao.deleteTask(task.toTaskEntity())
+    override suspend fun deleteTask(task: Task) = taskDao.deleteTask(task.id)
+
+    override suspend fun deleteTaskPermanently(task: TaskEntity) {
+        return taskDao.deleteTaskPermanently(task)
+    }
 
     override suspend fun deleteAllTasks() = taskDao.deleteAllTasks()
 
     override suspend fun deleteCompletedTasks() = taskDao.deleteCompletedTasks()
 
-    override suspend fun getAllUnSyncedTasks(): Flow<List<Task>> {
+    override suspend fun markTaskAsSynced(id: Long) = taskDao.markTaskAsSynced(id)
+
+    override suspend fun getAllUnSyncedTasks(): List<TaskEntity> {
         return taskDao.getAllUnSyncedTasks()
-            .map {
-                it.map { taskEntity ->
-                    taskEntity.toTask()
-                }
-            }
     }
+
+    override suspend fun getAllDeletedTasks(): List<TaskEntity> = taskDao.getAllDeletedTasks()
 }

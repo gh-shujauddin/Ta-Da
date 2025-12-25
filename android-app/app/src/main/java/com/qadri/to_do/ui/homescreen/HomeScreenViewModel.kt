@@ -23,10 +23,6 @@ class HomeScreenViewModel @Inject constructor(
     private val taskRepository: TaskRepository
 ) : ViewModel() {
 
-    init {
-        syncTasks()
-    }
-
     val getAllTasks = taskRepository.getAllTask()
         .stateIn(
             viewModelScope,
@@ -48,15 +44,6 @@ class HomeScreenViewModel @Inject constructor(
 
     fun deleteTask(task: Task) = viewModelScope.launch {
         taskRepository.deleteTask(task)
-    }
-
-    private fun syncTasks() {
-        viewModelScope.launch {
-            val tasks = taskRepository.getAllUnSyncedTasks()
-                .collect {
-                    Log.d(TAG, it.toString())
-                }
-        }
     }
 
     companion object {

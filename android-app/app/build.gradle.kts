@@ -77,6 +77,12 @@ dependencies {
     implementation("com.google.dagger:hilt-android:2.57.2")
     ksp("com.google.dagger:hilt-compiler:2.57.2")
     implementation("androidx.hilt:hilt-navigation-compose:1.3.0")
+    implementation ("androidx.hilt:hilt-work:1.2.0")
+    ksp ("androidx.hilt:hilt-compiler:1.2.0")
+
+    // work manger
+    implementation("androidx.work:work-runtime:2.11.0")
+
     testImplementation("junit:junit:4.13.2")
     androidTestImplementation("androidx.test.ext:junit:1.3.0")
     androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
