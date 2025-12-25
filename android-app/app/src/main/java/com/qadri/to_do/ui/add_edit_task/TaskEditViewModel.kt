@@ -9,10 +9,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.qadri.to_do.data.repository.TaskRepository
+import com.qadri.to_do.model.Task
 import com.qadri.to_do.model.TaskUiState
-import com.qadri.to_do.model.mappers.toTask
 import com.qadri.to_do.model.mappers.toTaskUiState
-import com.qadri.to_do.ui.homescreen.TaskDetails
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -41,27 +40,29 @@ class TaskEditViewModel @Inject constructor(
         }
     }
 
-    fun updateUiState(task: TaskDetails) {
-        taskUiState = TaskUiState(taskDetails = task, isEntryValid = validateInput(task))
+    fun updateUiState(task: Task) {
+        taskUiState = TaskUiState(task = task, isEntryValid = validateInput(task))
     }
 
     fun updateTask() = viewModelScope.launch {
-        taskRepository.updateItem(taskUiState.taskDetails.toTask())
+        val task = taskUiState.task
+        taskRepository.updateItem(task)
     }
 
     fun deleteTask() = viewModelScope.launch {
-        taskRepository.deleteTask(taskUiState.taskDetails.toTask())
+        val task = taskUiState.task
+        taskRepository.deleteTask(task)
     }
 
-    private fun validateInput(taskDetails: TaskDetails = taskUiState.taskDetails): Boolean {
-        return with(taskDetails) {
-            taskName.isNotBlank()
+    private fun validateInput(task: Task? = taskUiState.task): Boolean {
+        return with(task) {
+            this?.taskName?.isNotBlank() ?: false
         }
     }
 
     suspend fun saveTask() {
         if (validateInput()) {
-            taskRepository.insertTask(taskUiState.taskDetails.toTask())
+            taskRepository.insertTask(taskUiState.task)
         } else {
             Log.d(TAG, "Input not validated")
         }

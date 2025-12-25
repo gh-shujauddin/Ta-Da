@@ -26,9 +26,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.qadri.to_do.R
+import com.qadri.to_do.model.Task
 import com.qadri.to_do.model.TaskUiState
 import com.qadri.to_do.ui.ToDoAppTopBar
-import com.qadri.to_do.ui.homescreen.TaskDetails
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
@@ -72,13 +72,13 @@ fun TaskInputScreen(
 @Composable
 fun TaskInputBody(
     taskUiState: TaskUiState,
-    onTaskValueChange: (TaskDetails) -> Unit,
+    onTaskValueChange: (Task) -> Unit,
     onSaveClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         TaskInputForm(
-            taskDetails = taskUiState.taskDetails,
+            taskDetails = taskUiState.task,
             onTaskValueChange = { onTaskValueChange(it) },
             modifier = Modifier
                 .fillMaxWidth()
@@ -99,9 +99,9 @@ fun TaskInputBody(
 
 @Composable
 fun TaskInputForm(
-    taskDetails: TaskDetails,
+    taskDetails: Task,
     modifier: Modifier = Modifier,
-    onTaskValueChange: (TaskDetails) -> Unit = {}
+    onTaskValueChange: (Task) -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
     Column(modifier = modifier) {

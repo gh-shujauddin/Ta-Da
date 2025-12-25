@@ -33,5 +33,5 @@ interface TaskDao {
     suspend fun deleteCompletedTasks()
 
     @Query("select * from task where isSynced = 0")
-    suspend fun getAllUnSyncedTasks(): Flow<List<TaskEntity>>
+    fun getAllUnSyncedTasks(): Flow<List<TaskEntity>>
 }

@@ -51,7 +51,12 @@ class HomeScreenViewModel @Inject constructor(
     }
 
     private fun syncTasks() {
-
+        viewModelScope.launch {
+            val tasks = taskRepository.getAllUnSyncedTasks()
+                .collect {
+                    Log.d(TAG, it.toString())
+                }
+        }
     }
 
     companion object {
