@@ -1,8 +1,6 @@
 package com.qadri.to_do.model
 
-import com.qadri.to_do.ui.homescreen.TaskDetails
-
 data class TaskUiState(
-    val taskdetails: TaskDetails = TaskDetails(),
+    val task: Task? = null,
     val isEntryValid: Boolean = false
 )

@@ -29,7 +29,6 @@ import com.qadri.to_do.R
 import com.qadri.to_do.model.TaskUiState
 import com.qadri.to_do.ui.ToDoAppTopBar
 import com.qadri.to_do.ui.homescreen.TaskDetails
-import com.qadri.to_do.ui.add_edit_task.TaskEditViewModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
@@ -79,7 +78,7 @@ fun TaskInputBody(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         TaskInputForm(
-            taskDetails = taskUiState.taskdetails,
+            taskDetails = taskUiState.taskDetails,
             onTaskValueChange = { onTaskValueChange(it) },
             modifier = Modifier
                 .fillMaxWidth()

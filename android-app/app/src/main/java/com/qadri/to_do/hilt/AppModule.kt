@@ -2,14 +2,17 @@ package com.qadri.to_do.hilt
 
 import android.content.Context
 import com.qadri.to_do.data.OfflineTaskRepository
-import com.qadri.to_do.data.TaskDao
-import com.qadri.to_do.data.TaskRepository
-import com.qadri.to_do.data.ToDoDatabase
+import com.qadri.to_do.data.network.RetrofitInstance
+import com.qadri.to_do.data.network.TaskApiService
+import com.qadri.to_do.data.room.TaskDao
+import com.qadri.to_do.data.repository.TaskRepository
+import com.qadri.to_do.data.room.ToDoDatabase
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import retrofit2.Retrofit
 import javax.inject.Singleton
 
 @Module
@@ -26,6 +29,18 @@ class AppModule {
     @Singleton
     fun provideTaskRepository(taskDao: TaskDao): TaskRepository {
         return OfflineTaskRepository(taskDao)
+    }
+
+    @Provides
+    @Singleton
+    fun providedRetrofit(): Retrofit {
+        return RetrofitInstance.instance
+    }
+
+    @Provides
+    @Singleton
+    fun providesTaskApiService(retrofit: Retrofit): TaskApiService {
+        return retrofit.create(TaskApiService::class.java)
     }
 
 }

@@ -1,4 +1,4 @@
-package com.qadri.to_do.data
+package com.qadri.to_do.data.repository
 
 import com.qadri.to_do.model.Task
 import kotlinx.coroutines.flow.Flow
@@ -17,4 +17,7 @@ interface TaskRepository {
     suspend fun deleteAllTasks()
 
     suspend fun deleteCompletedTasks()
+
+    suspend fun getAllUnSyncedTasks(): Flow<List<Task>>
+
 }

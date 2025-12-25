@@ -8,7 +8,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
-import com.qadri.to_do.data.TaskRepository
+import com.qadri.to_do.data.repository.TaskRepository
 import com.qadri.to_do.model.TaskUiState
 import com.qadri.to_do.model.mappers.toTask
 import com.qadri.to_do.model.mappers.toTaskUiState
@@ -42,18 +42,18 @@ class TaskEditViewModel @Inject constructor(
     }
 
     fun updateUiState(task: TaskDetails) {
-        taskUiState = TaskUiState(taskdetails = task, isEntryValid = validateInput(task))
+        taskUiState = TaskUiState(taskDetails = task, isEntryValid = validateInput(task))
     }
 
     fun updateTask() = viewModelScope.launch {
-        taskRepository.updateItem(taskUiState.taskdetails.toTask())
+        taskRepository.updateItem(taskUiState.taskDetails.toTask())
     }
 
     fun deleteTask() = viewModelScope.launch {
-        taskRepository.deleteTask(taskUiState.taskdetails.toTask())
+        taskRepository.deleteTask(taskUiState.taskDetails.toTask())
     }
 
-    private fun validateInput(taskDetails: TaskDetails = taskUiState.taskdetails): Boolean {
+    private fun validateInput(taskDetails: TaskDetails = taskUiState.taskDetails): Boolean {
         return with(taskDetails) {
             taskName.isNotBlank()
         }
@@ -61,7 +61,7 @@ class TaskEditViewModel @Inject constructor(
 
     suspend fun saveTask() {
         if (validateInput()) {
-            taskRepository.insertTask(taskUiState.taskdetails.toTask())
+            taskRepository.insertTask(taskUiState.taskDetails.toTask())
         } else {
             Log.d(TAG, "Input not validated")
         }

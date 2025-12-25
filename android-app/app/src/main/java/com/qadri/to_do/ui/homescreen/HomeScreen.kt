@@ -125,9 +125,7 @@ fun HomeScreen(
                 .padding(it)
                 .fillMaxSize(),
             onDelete = { task ->
-                coroutineScope.launch {
-                    viewModel.deleteTask(task)
-                }
+                viewModel.deleteTask(task)
             }
         )
         if (deleteConfirmationRequired) {
@@ -406,7 +404,7 @@ fun DeleteConfirmationDialog(
 fun TaskCardPreview() {
     TaskCard(
         task = Task(1, "name", "desc", true),
-        onCheckedChange = { /*TODO*/ },
+        onCheckedChange = { },
         modifier = Modifier
     )
 }
