@@ -3,6 +3,7 @@ package com.qadri.tada.controller;
 import com.qadri.tada.dto.TaskDto;
 import com.qadri.tada.service.TaskService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,13 +12,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/tasks")
 @RequiredArgsConstructor
+@Slf4j
 public class TaskController {
 
     private final TaskService taskService;
 
-    @GetMapping
-    public ResponseEntity<List<TaskDto>> getAllTasks() {
-        return ResponseEntity.ok(taskService.getAllTasks());
+    @GetMapping("all")
+    public ResponseEntity<List<TaskDto>> getTaskSince(@RequestParam(required = false) Long lastSyncTime) {
+        return ResponseEntity.ok(taskService.getAllTasks(lastSyncTime));
     }
 
     @GetMapping("/{id}")
@@ -33,7 +35,9 @@ public class TaskController {
 
     @PutMapping("/{id}")
     public ResponseEntity<TaskDto> upsertTask(@PathVariable("id") Long id, @RequestBody TaskDto taskDto) {
+        System.out.println("Request task dto: " + taskDto);
         TaskDto task = taskService.upsertTask(id, taskDto);
+        log.debug("TASK: {}", task);
         return ResponseEntity.ok(task);
     }
 

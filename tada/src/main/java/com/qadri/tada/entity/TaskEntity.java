@@ -9,6 +9,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class TaskEntity {
     @Id
     private Long id;
@@ -17,8 +18,8 @@ public class TaskEntity {
     private String taskName;
 
     private String taskDescription;
-    private boolean isCompleted;
-    private boolean isDeleted;
+    private Boolean isCompleted;
+    private Boolean isDeleted;
     private Long lastUpdateTime;
     private Long createdAt;
 }

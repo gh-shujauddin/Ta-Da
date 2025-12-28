@@ -5,6 +5,7 @@ import com.qadri.tada.entity.TaskEntity;
 import com.qadri.tada.repository.TaskRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
@@ -12,15 +13,21 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Service
+@Slf4j
 public class TaskService {
 
     private final ModelMapper modelMapper;
 
     private final TaskRepository taskRepository;
 
-    public List<TaskDto> getAllTasks() {
-        return taskRepository.findAll()
-                .stream()
+    public List<TaskDto> getAllTasks(Long lastSyncTime) {
+        List<TaskEntity> entities;
+        if (lastSyncTime == null) {
+            entities = taskRepository.findAll();
+        } else {
+            entities = taskRepository.findByLastUpdateTimeGreaterThan(lastSyncTime);
+        }
+        return entities.stream()
                 .map(task -> modelMapper.map(task, TaskDto.class))
                 .toList();
     }
@@ -45,7 +52,7 @@ public class TaskService {
     public void deleteTaskById(Long id) {
         TaskEntity task = taskRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Cannot delete. Task not found with id: " + id));
-        task.setDeleted(true);
+        task.setIsDeleted(true);
         task.setLastUpdateTime(System.currentTimeMillis());
         taskRepository.save(task);
     }
@@ -60,10 +67,12 @@ public class TaskService {
 
         entity.setTaskName(taskDto.getTaskName());
         entity.setTaskDescription(taskDto.getTaskDescription());
-        entity.setCompleted(entity.isCompleted());
-
+        entity.setIsCompleted(taskDto.getIsCompleted());
         entity.setLastUpdateTime(System.currentTimeMillis());
 
-        return modelMapper.map(taskRepository.save(entity), TaskDto.class);
+        entity = taskRepository.save(entity);
+
+        log.debug("Entity upsert: {}", entity);
+        return modelMapper.map(entity, TaskDto.class);
     }
 }
