@@ -7,15 +7,16 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.PUT
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface TaskApiService {
 
-    @GET("api/tasks")
-    suspend fun getAllTasks(@Path("lastSyncTime") lastSyncTime: Long?): Response<List<TaskDto>>
+    @GET("all")
+    suspend fun getAllTasks(@Query("lastSyncTime") lastSyncTime: Long?): Response<List<TaskDto>>
 
-    @PUT("api/tasks")
+    @PUT("{id}")
     suspend fun updateTask(@Path("id") id: Long, @Body task: TaskDto): Response<TaskDto>
 
-    @DELETE("api/tasks")
+    @DELETE("{id}")
     suspend fun deleteTaskById(@Path("id") id: Long): Response<Unit>
 }

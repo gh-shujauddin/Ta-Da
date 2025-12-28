@@ -61,7 +61,7 @@ fun TaskInputScreen(
             },
             onSaveClick = {
                 coroutineScope.launch {
-                    viewModel.saveTask()
+                    viewModel.upsertTask()
                     navigateBack()
                 }
             }

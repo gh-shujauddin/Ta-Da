@@ -21,7 +21,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.qadri.to_do.R
 import com.qadri.to_do.ui.ToDoAppTopBar
-import com.qadri.to_do.ui.add_edit_task.TaskEditViewModel
 import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 
@@ -61,7 +60,7 @@ fun TaskEditScreen(
             },
             onSaveClick = {
                 coroutineScope.launch {
-                    viewModel.updateTask()
+                    viewModel.upsertTask()
                     navigateBack()
                 }
             }

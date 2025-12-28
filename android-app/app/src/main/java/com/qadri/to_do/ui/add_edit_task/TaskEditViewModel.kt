@@ -13,8 +13,6 @@ import com.qadri.to_do.model.Task
 import com.qadri.to_do.model.TaskUiState
 import com.qadri.to_do.model.mappers.toTaskUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,9 +39,13 @@ class TaskEditViewModel @Inject constructor(
         taskUiState = TaskUiState(task = task, isEntryValid = validateInput(task))
     }
 
-    fun updateTask() = viewModelScope.launch {
-        val task = taskUiState.task
-        taskRepository.updateItem(task)
+    fun upsertTask() = viewModelScope.launch {
+        if (validateInput()) {
+            val task = taskUiState.task
+            taskRepository.upsertItem(task)
+        } else {
+            Log.d(TAG, "Input not validated")
+        }
     }
 
     fun deleteTask() = viewModelScope.launch {
@@ -54,14 +56,6 @@ class TaskEditViewModel @Inject constructor(
     private fun validateInput(task: Task? = taskUiState.task): Boolean {
         return with(task) {
             this?.taskName?.isNotBlank() ?: false
-        }
-    }
-
-    suspend fun saveTask() {
-        if (validateInput()) {
-            taskRepository.insertLocalTask(taskUiState.task)
-        } else {
-            Log.d(TAG, "Input not validated")
         }
     }
 

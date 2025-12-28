@@ -186,7 +186,7 @@ fun TaskList(
     modifier: Modifier = Modifier,
     onDelete: (Task) -> Unit
 ) {
-    val (completedTasks, incompletedTasks) = allTasks.partition { it.isCompleted }
+//    val (completedTasks, incompletedTasks) = allTasks.partition { it.isCompleted }
 
     LazyColumn(
         modifier = modifier
@@ -194,7 +194,7 @@ fun TaskList(
             .padding(dimensionResource(id = R.dimen.padding_medium)),
         verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_small))
     ) {
-        items(incompletedTasks, key = { it.id }) { task ->
+        items(allTasks, key = { it.id }) { task ->
             TaskItem(
                 task = task,
                 onCheckedChange = {
@@ -212,23 +212,23 @@ fun TaskList(
             )
         }
 
-        items(completedTasks, key = { it.id }) { task ->
-            TaskItem(
-                task = task,
-                onCheckedChange = {
-                    onCheckedChange(task)
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        onTaskClick(task)
-                    },
-//                isCompleted = true,
-                onDelete = {
-                    onDelete(task)
-                }
-            )
-        }
+//        items(completedTasks, key = { it.id }) { task ->
+//            TaskItem(
+//                task = task,
+//                onCheckedChange = {
+//                    onCheckedChange(task)
+//                },
+//                modifier = Modifier
+//                    .fillMaxWidth()
+//                    .clickable {
+//                        onTaskClick(task)
+//                    },
+////                isCompleted = true,
+//                onDelete = {
+//                    onDelete(task)
+//                }
+//            )
+//        }
     }
 }
 

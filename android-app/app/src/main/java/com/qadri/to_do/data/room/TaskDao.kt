@@ -30,11 +30,20 @@ interface TaskDao {
     @Delete
     suspend fun deleteTaskPermanently(task: TaskEntity)
 
-    @Query("delete from task")
-    suspend fun deleteAllTasks()
+    @Query("""
+        update task
+        set isDeleted = 1, 
+            lastUpdateTime=:lastUpdateTime
+        where isDeleted = 0
+    """)
+    suspend fun deleteAllTasks(lastUpdateTime: Long)
 
-    @Query("delete from task where is_completed = 1")
-    suspend fun deleteCompletedTasks()
+    @Query("""
+        update task 
+        set isDeleted = 1, lastUpdateTime=:lastUpdateTime, isSynced = 0
+        where is_completed = 1 and isDeleted = 0
+    """)
+    suspend fun deleteCompletedTasks(lastUpdateTime: Long)
 
     @Query("select * from task where isSynced = 0")
     suspend fun getAllUnSyncedTasks(): List<TaskEntity>
@@ -55,4 +64,14 @@ interface TaskDao {
         val ids = tasks.map { it.id }
         markTaskAsSynced(ids, true)
     }
+
+    @Query("""
+        update task 
+        set is_completed = :isCompleted,
+            isSynced = 0,
+            lastUpdateTime=:lastUpdateTime
+        where id=:id
+        
+    """)
+    fun toggleItemCompletion(id: Long, lastUpdateTime: Long, isCompleted: Boolean)
 }

@@ -1,6 +1,7 @@
 package com.qadri.to_do.workers
 
 import android.content.Context
+import android.util.Log
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
@@ -12,22 +13,23 @@ import dagger.assisted.AssistedInject
 class BackgroundSyncWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParameters: WorkerParameters,
-    private val bgSyncUseCase: BackgroundSyncUseCase
+    private val backgroundSyncUseCase: BackgroundSyncUseCase
 ) : CoroutineWorker(context, workerParameters) {
 
 
     override suspend fun doWork(): Result {
-        val result = bgSyncUseCase()
-
-        return if (result.isSuccess) {
-            Result.success()
+        val result = backgroundSyncUseCase()
+        return if (result.isFailure) {
+            Log.d(TAG, "doWork: ${result.exceptionOrNull()}")
+            Result.retry()
         } else {
-            Result.failure()
+            Log.d(TAG, "doWork: Success")
+            Result.success()
         }
     }
 
     companion object {
-        private const val TAG = "BGSyncWorker"
+        private const val TAG = "BackgroundSyncWorker"
     }
 }
 

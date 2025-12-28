@@ -13,11 +13,10 @@ interface TaskRepository {
     suspend fun insertTask(task: TaskDto, synced: Boolean = false)
     suspend fun insertLocalTask(task: Task)
 
-    suspend fun updateItem(task: Task)
+    suspend fun upsertItem(task: Task)
+    suspend fun markItemAsCompleted(task: Task)
 
     suspend fun deleteTask(task: Task)
-
-    suspend fun deleteTaskPermanently(task: TaskEntity)
 
     suspend fun deleteAllTasks()
 

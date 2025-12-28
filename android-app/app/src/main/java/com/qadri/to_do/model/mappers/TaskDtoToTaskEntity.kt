@@ -9,7 +9,8 @@ fun TaskEntity.toTaskDto() = TaskDto(
     taskDescription = taskDescription,
     isCompleted = isCompleted,
     lastUpdateTime = lastUpdateTime,
-    createdAt = createdAt
+    createdAt = createdAt,
+    isDeleted = isDeleted
 )
 
 fun TaskDto.toTaskEntity() = TaskEntity(
@@ -18,5 +19,6 @@ fun TaskDto.toTaskEntity() = TaskEntity(
     taskDescription = taskDescription,
     isCompleted = isCompleted,
     lastUpdateTime = lastUpdateTime,
-    createdAt = createdAt
+    createdAt = createdAt,
+    isDeleted = isDeleted
 )

@@ -1,5 +1,6 @@
 package com.qadri.to_do.data.usecase
 
+import android.util.Log
 import com.qadri.to_do.data.prefs.SyncSettingsManager
 import com.qadri.to_do.data.repository.RemoteTaskRepository
 import com.qadri.to_do.data.room.TaskDao
@@ -35,6 +36,7 @@ class BackgroundSyncUseCase(
                 Result.success(Unit)
             }
         } catch (e: Exception) {
+            Log.d(TAG, "invoke: ${e.message}")
             Result.failure(e)
         }
     }
@@ -49,20 +51,25 @@ class BackgroundSyncUseCase(
 
             val results = unSyncedTasks.map { taskEntity ->
                 async {
+                    Log.d(TAG, "pushUnsyncedTasks: ${taskEntity.toTaskDto()}")
+
                     onlineRepository.updateTask(taskEntity.toTaskDto())
                         .onSuccess {
+                            Log.d(TAG, "pushUnsyncedTasks: Success $it")
                             taskDao.markTaskAsSynced(listOf(taskEntity.id), true)
                         }
                 }
             }.awaitAll()
 
             val firstFailure = results.firstOrNull { it.isFailure }
-            if (firstFailure != null) {
+            if (firstFailure == null) {
                 return@coroutineScope Result.success(Unit)
             } else {
-                return@coroutineScope Result.failure(firstFailure?.exceptionOrNull()!!)
+                Log.d(TAG, "pushUnsyncedTasks: First failure: ${firstFailure.exceptionOrNull()}")
+                return@coroutineScope Result.failure(firstFailure.exceptionOrNull()!!)
             }
         } catch (ex: Exception) {
+            Log.d(TAG, "pushUnsyncedTasks: ${ex.message}")
             return@coroutineScope Result.failure(ex)
         }
     }
@@ -79,19 +86,18 @@ class BackgroundSyncUseCase(
             val results = deletedTasks.map { taskEntity ->
                 async {
                     onlineRepository.deleteTask(taskEntity.toTaskDto())
-                        .onSuccess {
-                            taskDao.deleteTaskPermanently(taskEntity)
-                        }
                 }
             }.awaitAll()
 
             val firstFailure = results.firstOrNull { it.isFailure }
-            if (firstFailure != null) {
+            if (firstFailure == null) {
                 return@coroutineScope Result.success(Unit)
             } else {
-                return@coroutineScope Result.failure(firstFailure?.exceptionOrNull()!!)
+                Log.d(TAG, "pushDeletedTasks: First failure: ${firstFailure.exceptionOrNull()}")
+                return@coroutineScope Result.failure(firstFailure.exceptionOrNull()!!)
             }
         } catch (ex: Exception) {
+            Log.d(TAG, "pushDeletedTasks: ${ex.message}")
             return@coroutineScope Result.failure(ex)
         }
     }
@@ -104,6 +110,7 @@ class BackgroundSyncUseCase(
             val result = onlineRepository.getAllTasks(lastSyncTime)
 
             if (result.isFailure) {
+                Log.d(TAG, "pullRemoteChanges: ${result.exceptionOrNull()}")
                 return@coroutineScope Result.failure(result.exceptionOrNull()!!)
             }
 
@@ -113,19 +120,37 @@ class BackgroundSyncUseCase(
                 val localTask = taskDao.getTask(remoteTask.id)
 
                 when {
-                    localTask == null -> {
-                        // Add as new task and markAsSync
-                        taskDao.insertTask(
-                            task = remoteTask.toTaskEntity()
+                    localTask == null  -> {
+                        if (!remoteTask.isDeleted) {
+                            Log.d(TAG, "local task is null")
+                            // Add as new task and markAsSync
+                            taskDao.insertTask(
+                                task = remoteTask.toTaskEntity()
+                                    .copy(
+                                        isSynced = true,
+                                        isDeleted = false
+                                    )
+                            )
+                        }
+                    }
+
+                    remoteTask.isDeleted -> {
+                        Log.d(TAG, "local task not null, isDelted")
+
+                        taskDao.updateItem(
+                            remoteTask.toTaskEntity()
                                 .copy(
                                     isSynced = true,
-                                    isDeleted = false
+                                    isDeleted = true,
+                                    lastUpdateTime = remoteTask.lastUpdateTime
                                 )
                         )
                     }
 
                     // if localTime < remote time (update local)
                     localTask.lastUpdateTime < remoteTask.lastUpdateTime -> {
+                        Log.d(TAG, "local last update time < remote last update time $remoteTask")
+
                         taskDao.updateItem(
                             remoteTask.toTaskEntity()
                                 .copy(
@@ -143,6 +168,7 @@ class BackgroundSyncUseCase(
 
                     else -> {
                         if (!localTask.isSynced) {
+                            Log.d(TAG, "local task is not synced")
                             // else identical just mark as synced
                             taskDao.markTaskAsSynced(listOf(localTask.id), true)
                         }
@@ -151,12 +177,13 @@ class BackgroundSyncUseCase(
             }
             Result.success(Unit)
         } catch (ex: Exception) {
+            Log.d(TAG, "pullRemoteChanges: ${ex.message}")
             return@coroutineScope Result.failure(ex)
         }
     }
 
     companion object {
-        private const val TAG = "BGSyncUseCase"
+        private const val TAG = "BackgroundSyncUseCase"
 
     }
 }

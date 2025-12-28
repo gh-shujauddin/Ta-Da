@@ -5,6 +5,7 @@ data class TaskDto(
     val taskName: String,
     val taskDescription: String,
     val isCompleted: Boolean,
+    val isDeleted: Boolean,
     val lastUpdateTime: Long,
     val createdAt: Long
 )
