@@ -1,4 +1,4 @@
-package com.qadri.tada.model;
+package com.qadri.tada.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,4 +12,7 @@ public class TaskDto {
     private String taskName;
     private String taskDescription;
     private boolean isCompleted;
+    private boolean isDeleted;
+    private Long lastUpdateTime;
+    private Long createdAt;
 }

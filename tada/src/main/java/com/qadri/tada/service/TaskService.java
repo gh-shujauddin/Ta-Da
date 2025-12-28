@@ -1,8 +1,9 @@
 package com.qadri.tada.service;
 
-import com.qadri.tada.model.TaskDto;
-import com.qadri.tada.model.TaskEntity;
+import com.qadri.tada.dto.TaskDto;
+import com.qadri.tada.entity.TaskEntity;
 import com.qadri.tada.repository.TaskRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -24,38 +25,45 @@ public class TaskService {
                 .toList();
     }
 
-    public TaskDto createTask(TaskDto taskDto) {
-        if (taskRepository.existsById(taskDto.getId())) {
-            throw new IllegalArgumentException("Task already exist with task id- " + taskDto.getId());
-        }
-
-        TaskEntity task = modelMapper.map(taskDto, TaskEntity.class);
-        TaskEntity savedTask = taskRepository.save(task);
-
-        return modelMapper.map(savedTask, TaskDto.class);
-    }
+//    public TaskDto createTask(TaskDto taskDto) {
+//        if (taskRepository.existsById(taskDto.getId())) {
+//            throw new IllegalArgumentException("Task already exist with task id- " + taskDto.getId());
+//        }
+//
+//        TaskEntity task = modelMapper.map(taskDto, TaskEntity.class);
+//        TaskEntity savedTask = taskRepository.save(task);
+//
+//        return modelMapper.map(savedTask, TaskDto.class);
+//    }
 
     public TaskDto getTaskById(Long id) {
         TaskEntity taskEntity = taskRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Task not found with id: " + id));
+                .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + id));
         return modelMapper.map(taskEntity, TaskDto.class);
     }
 
     public void deleteTaskById(Long id) {
-        if (!taskRepository.existsById(id)) {
-            throw new IllegalArgumentException("Cannot delete. Task not found with id: " + id);
-        }
-        taskRepository.deleteById(id);
+        TaskEntity task = taskRepository.findById(id).orElseThrow(() ->
+                new EntityNotFoundException("Cannot delete. Task not found with id: " + id));
+        task.setDeleted(true);
+        task.setLastUpdateTime(System.currentTimeMillis());
+        taskRepository.save(task);
     }
 
-    public TaskDto updateTask(Long id, TaskDto taskDto) {
-        boolean taskExits = taskRepository.existsById(id);
-        if (!taskExits) {
-            throw new IllegalArgumentException("Task not found with task id: " + taskDto.getId());
-        }
-        TaskEntity taskEntity = modelMapper.map(taskDto, TaskEntity.class);
-        TaskEntity savedTask = taskRepository.save(taskEntity);
+    public TaskDto upsertTask(Long id, TaskDto taskDto) {
+        TaskEntity entity = taskRepository.findById(id).orElseGet(() ->
+                TaskEntity.builder()
+                        .id(id)
+                        .createdAt(System.currentTimeMillis())
+                        .build()
+        );
 
-        return modelMapper.map(savedTask, TaskDto.class);
+        entity.setTaskName(taskDto.getTaskName());
+        entity.setTaskDescription(taskDto.getTaskDescription());
+        entity.setCompleted(entity.isCompleted());
+
+        entity.setLastUpdateTime(System.currentTimeMillis());
+
+        return modelMapper.map(taskRepository.save(entity), TaskDto.class);
     }
 }
