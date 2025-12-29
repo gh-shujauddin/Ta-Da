@@ -68,6 +68,7 @@ public class TaskService {
         entity.setTaskName(taskDto.getTaskName());
         entity.setTaskDescription(taskDto.getTaskDescription());
         entity.setIsCompleted(taskDto.getIsCompleted());
+        entity.setIsDeleted(taskDto.getIsDeleted());
         entity.setLastUpdateTime(System.currentTimeMillis());
 
         entity = taskRepository.save(entity);
