@@ -50,13 +50,16 @@ public class TaskService {
 //    }
 
     public TaskDto getTaskById(Long id) {
-        TaskEntity taskEntity = taskRepository.findById(id)
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        TaskEntity taskEntity = taskRepository.findByIdAndUser_Id(id, user.getId())
                 .orElseThrow(() -> new EntityNotFoundException("Task not found with id: " + id));
         return modelMapper.map(taskEntity, TaskDto.class);
     }
 
     public void deleteTaskById(Long id) {
-        TaskEntity task = taskRepository.findById(id).orElseThrow(() ->
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        TaskEntity task = taskRepository.findByIdAndUser_Id(id, user.getId()).orElseThrow(() ->
                 new EntityNotFoundException("Cannot delete. Task not found with id: " + id));
         task.setIsDeleted(true);
         taskRepository.save(task);
@@ -71,6 +74,7 @@ public class TaskService {
                             .build();
                 }
         );
+        //TODO handle id mismatch scenarios
 
         entity.setTaskName(taskDto.getTaskName());
         entity.setTaskDescription(taskDto.getTaskDescription());
