@@ -1,6 +1,7 @@
 package com.qadri.tada.security;
 
 import com.qadri.tada.entity.User;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -30,4 +31,18 @@ public class AuthUtil {
                 .compact();
     }
 
+    public String getUsernameFromToken(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(getSecretKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        return claims.getSubject();
+    }
 }
+
+/**
+ * Tommorow task
+ * 1. Make Jwt filter chain and add in security filter chain
+ * 2. Modify the system to store tasks for specific users
+ */

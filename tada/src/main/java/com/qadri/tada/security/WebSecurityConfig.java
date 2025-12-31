@@ -8,6 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 
 @Configuration
@@ -16,6 +17,7 @@ import org.springframework.web.servlet.HandlerExceptionResolver;
 public class WebSecurityConfig {
 
     private final HandlerExceptionResolver handlerExceptionResolver;
+    private final JwtFilterChain jwtFilterChain;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -27,6 +29,7 @@ public class WebSecurityConfig {
                         .requestMatchers("auth/**").permitAll()
                         .anyRequest().authenticated()
                 )
+                .addFilterBefore(jwtFilterChain, UsernamePasswordAuthenticationFilter.class)
                 .exceptionHandling(exceptionConfig -> {
                     exceptionConfig.accessDeniedHandler(((request, response, accessDeniedException) -> {
                         log.error("error occurred {}", accessDeniedException.getLocalizedMessage());
