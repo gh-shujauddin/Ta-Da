@@ -1,9 +1,15 @@
 package com.qadri.tada.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
-@Entity(name = "tasks")
+import java.time.Instant;
+
+@Entity
+@Table(name = "tasks")
 @Getter
 @Setter
 @Builder
@@ -18,8 +24,22 @@ public class TaskEntity {
     private String taskName;
 
     private String taskDescription;
+
+    @Column(nullable = false)
     private Boolean isCompleted;
+
+    @Column(nullable = false)
     private Boolean isDeleted;
-    private Long lastUpdateTime;
-    private Long createdAt;
+
+    @UpdateTimestamp
+    private Instant lastUpdateTime;
+
+    @CreationTimestamp
+    @Column(updatable = false)
+    private Instant createdAt;
+
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 }

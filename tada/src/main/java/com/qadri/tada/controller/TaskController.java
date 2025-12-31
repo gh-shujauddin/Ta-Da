@@ -1,12 +1,14 @@
 package com.qadri.tada.controller;
 
 import com.qadri.tada.dto.TaskDto;
+import com.qadri.tada.error.IdNotMatchedException;
 import com.qadri.tada.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.Instant;
 import java.util.List;
 
 @RestController
@@ -34,7 +36,10 @@ public class TaskController {
 //    }
 
     @PutMapping("/{id}")
-    public ResponseEntity<TaskDto> upsertTask(@PathVariable("id") Long id, @RequestBody TaskDto taskDto) {
+    public ResponseEntity<TaskDto> upsertTask(@PathVariable("id") Long id, @RequestBody TaskDto taskDto) throws IdNotMatchedException {
+        if (id == null || !id.equals(taskDto.getId())) {
+            throw new IdNotMatchedException();
+        }
         System.out.println("Request task dto: " + taskDto);
         TaskDto task = taskService.upsertTask(id, taskDto);
         log.debug("TASK: {}", task);

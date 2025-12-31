@@ -2,13 +2,17 @@ package com.qadri.tada.service;
 
 import com.qadri.tada.dto.TaskDto;
 import com.qadri.tada.entity.TaskEntity;
+import com.qadri.tada.entity.User;
+import com.qadri.tada.error.IdNotMatchedException;
 import com.qadri.tada.repository.TaskRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -21,11 +25,13 @@ public class TaskService {
     private final TaskRepository taskRepository;
 
     public List<TaskDto> getAllTasks(Long lastSyncTime) {
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         List<TaskEntity> entities;
         if (lastSyncTime == null) {
-            entities = taskRepository.findAll();
+            entities = taskRepository.findByUser_Id(user.getId());
         } else {
-            entities = taskRepository.findByLastUpdateTimeGreaterThan(lastSyncTime);
+            Instant syncTime = Instant.ofEpochMilli(lastSyncTime);
+            entities = taskRepository.findByLastUpdateTimeGreaterThanAndUser_Id(syncTime, user.getId());
         }
         return entities.stream()
                 .map(task -> modelMapper.map(task, TaskDto.class))
@@ -53,23 +59,23 @@ public class TaskService {
         TaskEntity task = taskRepository.findById(id).orElseThrow(() ->
                 new EntityNotFoundException("Cannot delete. Task not found with id: " + id));
         task.setIsDeleted(true);
-        task.setLastUpdateTime(System.currentTimeMillis());
         taskRepository.save(task);
     }
 
     public TaskDto upsertTask(Long id, TaskDto taskDto) {
-        TaskEntity entity = taskRepository.findById(id).orElseGet(() ->
-                TaskEntity.builder()
-                        .id(id)
-                        .createdAt(System.currentTimeMillis())
-                        .build()
+        TaskEntity entity = taskRepository.findById(id).orElseGet(() -> {
+                    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+                    return TaskEntity.builder()
+                            .id(id)
+                            .user(user)
+                            .build();
+                }
         );
 
         entity.setTaskName(taskDto.getTaskName());
         entity.setTaskDescription(taskDto.getTaskDescription());
         entity.setIsCompleted(taskDto.getIsCompleted());
         entity.setIsDeleted(taskDto.getIsDeleted());
-        entity.setLastUpdateTime(System.currentTimeMillis());
 
         entity = taskRepository.save(entity);
 

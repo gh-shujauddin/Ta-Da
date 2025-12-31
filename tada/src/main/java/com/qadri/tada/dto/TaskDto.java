@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.time.Instant;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,6 +17,6 @@ public class TaskDto {
     private String taskDescription;
     private Boolean isCompleted;
     private Boolean isDeleted;
-    private Long lastUpdateTime;
-    private Long createdAt;
+    private Instant lastUpdateTime;
+    private Instant createdAt;
 }
